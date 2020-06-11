@@ -14,7 +14,7 @@
  
  Скачать и в приложении выбрать file
  
- ![](https://puu.sh/FV9xI/0eaa57f864.jpg)
+ ![](https://puu.sh/FV9JP/0512923c87.jpg)
  
  #### 2 вариант
  
