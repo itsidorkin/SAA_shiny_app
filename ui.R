@@ -4,6 +4,7 @@ fluidPage(
   titlePanel("Interface"),
   sidebarLayout(
     sidebarPanel(
+      width = 2,
       navbarPage(
         title = 'Select',
         tabPanel(
@@ -21,9 +22,6 @@ fluidPage(
         )
       ),
       
-      textInput(
-        "del", "delete column",placeholder = "1 2..."
-      ),
       selectInput(
         "sep", "separation", 
         c("," = ",", ";" = ";", "Tab" = "\t", "space" = " "), 
@@ -32,6 +30,9 @@ fluidPage(
       selectInput(
         "dec", "decimal", 
         c("." = ".", "," = ","), "."
+      ),
+      textInput(
+        "del", "delete column",placeholder = "1 2..."
       ),
       checkboxInput("header", "header", T), 
       numericInput("k", "count clasters (for kmeans)", 
