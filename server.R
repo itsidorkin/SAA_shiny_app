@@ -4,8 +4,6 @@ library(ggforce)
 library(SAA)
 library(DT)
 library(plotly)
-library(GGally)
-
 function(input, output) {
   
   dataInput <- reactive({
@@ -28,7 +26,8 @@ function(input, output) {
   })
   
   output$table <- renderDataTable(
-    if (is.null(input$file1) & (input$file2 == "")) {
+    if (is.null(input$file1) & 
+        (input$file2 == "")) {
       return(NULL)
     } else {
       datatable(dataInput(), list(searching = F))
@@ -36,7 +35,8 @@ function(input, output) {
   )
   
   output$textt3 <- reactive({
-    if (is.null(input$file1) & (input$file2 == "")) {
+    if (is.null(input$file1) & 
+        (input$file2 == "")) {
       return(NULL)
     } else {
       length(unique(dataInput()[,2]))
@@ -80,7 +80,8 @@ function(input, output) {
   }
   
   output$graphics1 <- renderPlot({
-    if (is.null(input$file1)) {
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(dataInput()) == 2) {
@@ -110,7 +111,8 @@ function(input, output) {
   }, height = 600, width = 600)
   
   output$graphics3 <- renderPlotly({
-    if (is.null(input$file1)) {
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(dataInput()) == 3) {
@@ -124,16 +126,24 @@ function(input, output) {
   })
   
   output$textK3 <-renderTable({
-    table <- matrix()
-    clstr <- main_function1()$clstr
-    total <- nrow(dataInput())
-    for (i in c(1:length(unique(clstr)))) {
-      table[i] <- paste0(
-        i, " Кластер: ", 
-        round(length(clstr[clstr == i]) / total * 100, 2),
-        " % (", length(clstr[clstr == i]), ")")
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(dataInput()) >= 3) {
+        table <- matrix()
+        clstr <- main_function1()$clstr
+        total <- nrow(dataInput())
+        for (i in c(1:length(unique(clstr)))) {
+          table[i] <- paste0(
+            i, " Кластер: ", 
+            round(length(clstr[clstr == i]) / 
+                    total * 100, 2),
+            " % (", length(clstr[clstr == i]), ")")
+        }
+        table
+      }
     }
-    table
   })
   
   output$downloadTable1 <- downloadHandler(
@@ -156,7 +166,8 @@ function(input, output) {
   })
   
   output$graphics2 <- renderPlot({
-    if (is.null(input$file1)) {
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(dataInput()) == 2) {
@@ -167,7 +178,7 @@ function(input, output) {
           size = 1
         ) + geom_circle(
           data = bin_dbscan$circle,
-          aes(
+          iaes(
             x0 = bin_dbscan$circle[, 1],
             y0 = bin_dbscan$circle[, 2],
             r = input$eps,
@@ -200,7 +211,8 @@ function(input, output) {
   }, height = 600, width = 600)
   
   output$graphics4 <- renderPlotly({
-    if (is.null(input$file1)) {
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(dataInput()) == 3) {
@@ -214,24 +226,33 @@ function(input, output) {
   })
   
   output$textd3 <-renderTable({
-    table <- matrix()
-    clstr <- main_function2()$result$clstr
-    total <- nrow(dataInput())
-    for (i in c(1:length(unique(clstr)))) {
-      table[i] <- paste0(
-        i," кластер: ",
-        if (i != length(unique(clstr))) {
-          round(length(clstr[clstr == i]) / total * 100, 2)
-        } else {
-          round(length(clstr[clstr == "noise"]) / total * 100, 2)
-        }, " % (", 
-        if (i != length(unique(clstr))) {
-          round(length(clstr[clstr == i]))
-        } else {
-          round(length(clstr[clstr == "noise"]))
-        },")")
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(dataInput()) >= 3) {
+        table <- matrix()
+        clstr <- main_function2()$result$clstr
+        total <- nrow(dataInput())
+        for (i in c(1:length(unique(clstr)))) {
+          table[i] <- paste0(
+            i," кластер: ",
+            if (i != length(unique(clstr))) {
+              round(length(clstr[clstr == i]) / 
+                      total * 100, 2)
+            } else {
+              round(length(clstr[clstr == "noise"]) / 
+                      total * 100, 2)
+            }, " % (", 
+            if (i != length(unique(clstr))) {
+              round(length(clstr[clstr == i]))
+            } else {
+              round(length(clstr[clstr == "noise"]))
+            },")")
+        }
+        table
+      }
     }
-    table
   })
   
   output$downloadTable2 <- downloadHandler(
