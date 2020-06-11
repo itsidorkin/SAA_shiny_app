@@ -11,7 +11,7 @@
  
 ### Шаг 2 Запуск
 
-     devtools::install_github('nikrodis/SAA', force = T)
+     shiny::runGitHub("SAA_shiny_app", "nikrodis")
      
 ## Наборы данных
      
