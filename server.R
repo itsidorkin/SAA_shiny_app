@@ -87,12 +87,20 @@ function(input, output) {
         bin_kmean <- main_function1()
         ggplot() + geom_point(
           data = bin_kmean,
-          aes(V1, V2, colour = clstr),
+          aes(
+            bin_kmean[, 1], 
+            bin_kmean[, 2], 
+            colour = clstr
+          ),
           size = 4,
           show.legend = FALSE
         ) + geom_encircle(
           data = bin_kmean,
-          aes(V1, V2, fill = clstr),
+          aes(
+            bin_kmean[, 1], 
+            bin_kmean[, 2], 
+            fill = clstr
+          ),
           alpha = 0.2,
           expand = 0,
           s_shape = 0.8,
