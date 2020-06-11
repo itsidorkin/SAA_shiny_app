@@ -1,2 +1,5 @@
-# SAA_shiny_app
- Shiny app for SAA
+Веб-приложение для SAA  
+ 
+ ## Как пользоваться
+ 
+     shiny::runGitHub("SAA_shiny_app", "nikrodis")
