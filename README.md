@@ -4,6 +4,7 @@
  
  ### Запуск
  
+     install.packages("shiny")
      shiny::runGitHub("SAA_shiny_app", "nikrodis")
      
  ### Наборы данных
