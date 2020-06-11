@@ -4,8 +4,16 @@
  
  ### Запуск
  
-     install.packages("shiny")
-     shiny::runGitHub("SAA_shiny_app", "nikrodis")
+ #### Шаг 1 Подготовка
+ 
+Перед запуском необходимо установить пакеты используемые в приложении: 
+ 
+     install.packages(c("ggplot2", "ggalt", "ggforce", "DT", "plotly", "GGally", "shiny", "devtools"))
+     devtools::install_github('nikrodis/SAA', force = T)
+ 
+#### Шаг 2 Запуск
+
+     devtools::install_github('nikrodis/SAA', force = T)
      
  ### Наборы данных
      
