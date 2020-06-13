@@ -4,9 +4,9 @@ library(ggforce)
 library(SAA)
 library(DT)
 library(plotly)
-function(input, output) {
+function(input, output, session) {
   
-  dataInput <- reactive({
+  data <- reactive({
     if (input$file2 != "") {
       a <- input$file2
     } else {
@@ -30,7 +30,7 @@ function(input, output) {
         (input$file2 == "")) {
       return(NULL)
     } else {
-      datatable(dataInput(), list(searching = F))
+      datatable(data(), list(searching = F))
     }
   )
   
@@ -39,19 +39,19 @@ function(input, output) {
         (input$file2 == "")) {
       return(NULL)
     } else {
-      length(unique(dataInput()[,2]))
+      length(unique(data()[,2]))
     }
   })
   
-  main_function1 <- reactive({
-    skmeans(dataInput(),input$k)$result
+  kmeans <- reactive({
+    skmeans(data(),input$k)$result
   })
   
   plot3d <- function(clstr) {
-    plot_ly(dataInput(),
-            x = dataInput()[, 1], 
-            y = dataInput()[, 2], 
-            z = dataInput()[, 3],
+    plot_ly(data(),
+            x = data()[, 1], 
+            y = data()[, 2], 
+            z = data()[, 3],
             color = clstr,
             stroke = I('black')
     ) %>%
@@ -60,10 +60,10 @@ function(input, output) {
   
   plotNd <- function(clstr) {
     dimensions <- list()
-    for (i in seq(ncol(dataInput()))) {
+    for (i in 1:ncol(data())) {
       dimensions[[i]] <- list(
-        values = dataInput()[, i], 
-        label = colnames(dataInput())[i]
+        values = data()[, i], 
+        label = colnames(data())[i]
       )
     }
     plot_ly(type = 'splom',
@@ -84,22 +84,21 @@ function(input, output) {
          (input$file2 == ""))) {
       return(NULL)
     } else {
-      if (ncol(dataInput()) == 2) {
-        bin_kmean <- main_function1()
+      if (ncol(data()) == 2) {
         ggplot() + geom_point(
-          data = bin_kmean,
+          data = kmeans(),
           aes(
-            bin_kmean[, 1], 
-            bin_kmean[, 2], 
+            kmeans()[, 1], 
+            kmeans()[, 2], 
             colour = clstr
           ),
           size = 4,
           show.legend = FALSE
         ) + geom_encircle(
-          data = bin_kmean,
+          data = kmeans(),
           aes(
-            bin_kmean[, 1], 
-            bin_kmean[, 2], 
+            kmeans()[, 1], 
+            kmeans()[, 2], 
             fill = clstr
           ),
           alpha = 0.2,
@@ -115,11 +114,11 @@ function(input, output) {
          (input$file2 == ""))) {
       return(NULL)
     } else {
-      if (ncol(dataInput()) == 3) {
-        plot3d(main_function1()$clstr)
+      if (ncol(data()) == 3) {
+        plot3d(kmeans()$clstr)
       } else {
-        if (ncol(dataInput()) > 3) {
-          plotNd(main_function1()$clstr)
+        if (ncol(data()) > 3) {
+          plotNd(kmeans()$clstr)
         }
       }
     }
@@ -130,16 +129,17 @@ function(input, output) {
          (input$file2 == ""))) {
       return(NULL)
     } else {
-      if (ncol(dataInput()) >= 3) {
+      if (ncol(data()) >= 3) {
         table <- matrix()
-        clstr <- main_function1()$clstr
-        total <- nrow(dataInput())
-        for (i in c(1:length(unique(clstr)))) {
+        clstr <- kmeans()$clstr
+        total <- nrow(data())
+        for (i in 1:length(unique(clstr))) {
           table[i] <- paste0(
             i, " Кластер: ", 
             round(length(clstr[clstr == i]) / 
                     total * 100, 2),
-            " % (", length(clstr[clstr == i]), ")")
+            " % (", length(clstr[clstr == i]), 
+            ")")
         }
         table
       }
@@ -150,7 +150,7 @@ function(input, output) {
     filename = "kmeans.csv",
     content = function(file) {
       write.table(
-        skmeans(dataInput(), input$k)$result,
+        skmeans(data(), input$k)$result,
         file,
         sep = ";",
         row.names = F,
@@ -161,8 +161,8 @@ function(input, output) {
   
   #---------------------------------------------
   
-  main_function2 <- reactive({
-    sdbscan(dataInput(), input$eps, input$minpts)
+  dbscan <- reactive({
+    sdbscan(data(), input$eps, input$minpts)
   })
   
   output$graphics2 <- renderPlot({
@@ -170,41 +170,39 @@ function(input, output) {
          (input$file2 == ""))) {
       return(NULL)
     } else {
-      if (ncol(dataInput()) == 2) {
-        bin_dbscan <- main_function2()$graphics
+      if (ncol(data()) == 2) {
         ggplot(
-        ) + geom_point(
-          aes(dataInput()[, 1], dataInput()[, 2]),
-          size = 1
         ) + geom_circle(
-          data = bin_dbscan$circle,
-          iaes(
-            x0 = bin_dbscan$circle[, 1],
-            y0 = bin_dbscan$circle[, 2],
+          data = dbscan()$graphics$circle,
+          aes(
+            x0 = dbscan()$graphics$circle[, 1],
+            y0 = dbscan()$graphics$circle[, 2],
             r = input$eps,
             fill = clstr,
             color = clstr
           ),
-          alpha = 0.25,
+          alpha = 0.2,
           show.legend = T
         ) + geom_encircle(
-          data = bin_dbscan$encircle,
+          data = dbscan()$graphics$encircle,
           aes(
-            x = bin_dbscan$encircle[, 1],
-            y = bin_dbscan$encircle[, 2],
+            x = dbscan()$graphics$encircle[, 1],
+            y = dbscan()$graphics$encircle[, 2],
             group = clstr
           ),
           alpha = 1,
           expand = 0,
-          s_shape = 0.75
+          s_shape = 0.8
         ) + labs(title = "DBSCAN"
         ) + geom_circle(
           aes(
-            x0 = bin_dbscan$noise[, 1],
-            y0 = bin_dbscan$noise[, 2],
+            x0 = dbscan()$graphics$noise[, 1],
+            y0 = dbscan()$graphics$noise[, 2],
             r = input$eps),
-          alpha = 1,
-          show.legend = FALSE
+          alpha = 1
+        ) + geom_point(
+          aes(data()[, 1], data()[, 2]),
+          shape = input$shape
         )
       }
     }
@@ -215,11 +213,11 @@ function(input, output) {
          (input$file2 == ""))) {
       return(NULL)
     } else {
-      if (ncol(dataInput()) == 3) {
-        plot3d(main_function2()$result$clstr)
+      if (ncol(data()) == 3) {
+        plot3d(dbscan()$result$clstr)
       } else {
-        if (ncol(dataInput()) > 3) {
-          plotNd(main_function2()$result$clstr)
+        if (ncol(data()) > 3) {
+          plotNd(dbscan()$result$clstr)
         }
       }
     }
@@ -230,11 +228,11 @@ function(input, output) {
          (input$file2 == ""))) {
       return(NULL)
     } else {
-      if (ncol(dataInput()) >= 3) {
+      if (ncol(data()) >= 3) {
         table <- matrix()
-        clstr <- main_function2()$result$clstr
-        total <- nrow(dataInput())
-        for (i in c(1:length(unique(clstr)))) {
+        clstr <- dbscan()$result$clstr
+        total <- nrow(data())
+        for (i in 1:length(unique(clstr))) {
           table[i] <- paste0(
             i," кластер: ",
             if (i != length(unique(clstr))) {
@@ -259,7 +257,7 @@ function(input, output) {
     filename = "dbscan.csv",
     content = function(file) {
       write.table(
-        sdbscan(dataInput(), input$eps, input$minpts)$result,
+        sdbscan(data(), input$eps, input$minpts)$result,
         file,
         sep = ";",
         row.names = F,
@@ -267,4 +265,6 @@ function(input, output) {
       )
     }
   )
+
+  session$onSessionEnded(stopApp)
 }
