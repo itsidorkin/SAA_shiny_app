@@ -201,8 +201,7 @@ function(input, output, session) {
             r = input$eps),
           alpha = 1
         ) + geom_point(
-          aes(data()[, 1], data()[, 2]),
-          shape = input$shape
+          aes(data()[, 1], data()[, 2])
         )
       }
     }
