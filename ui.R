@@ -42,8 +42,6 @@ fluidPage(
                    value = 0.5, min = 0, step = 0.1),
       numericInput("minpts", "minpts (for dbscan)", 
                    value = 4, min = 1),
-      numericInput("shape", "1", 
-                   value = 1, min = 1),
       downloadButton("downloadTable1", 
                      "Save result kmeans (CSV)"),
       downloadButton("downloadTable2", 
