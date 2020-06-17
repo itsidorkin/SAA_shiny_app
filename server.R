@@ -66,7 +66,7 @@ function(input, output, session) {
         fill = clstr,
         color = clstr
       ),
-      alpha = 0.2,
+      alpha = 0.5,
       show.legend = T
     ) + geom_encircle(
       data = dt$graphics$encircle,
@@ -122,7 +122,7 @@ function(input, output, session) {
   }
   
   kmeans <- reactive({
-    skmeans(data(),input$k)$result
+    skmeans(data(),input$k)
   })
   
   output$graphics1 <- renderPlot({
@@ -215,7 +215,7 @@ function(input, output, session) {
     filename = "kmeans.csv",
     content = function(file) {
       write.table(
-        skmeans(data(), input$k)$result,
+        skmeans(data(), input$k),
         file,
         sep = ";",
         row.names = F,
