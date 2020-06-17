@@ -4,8 +4,8 @@ library(ggforce)
 library(SAA)
 library(DT)
 library(plotly)
+
 function(input, output, session) {
-  
   data <- reactive({
     if (input$file2 != "") {
       a <- input$file2
@@ -19,10 +19,10 @@ function(input, output, session) {
     else
       del <- T
     
-    tab <- read.csv( a,
-                     header = input$header,
-                     sep = input$sep,
-                     dec = input$dec)[del]
+    read.csv(a,
+             header = input$header,
+             sep = input$sep,
+             dec = input$dec)[del]
   })
   
   output$table <- renderDataTable(
@@ -34,18 +34,60 @@ function(input, output, session) {
     }
   )
   
-  output$textt3 <- reactive({
-    if (is.null(input$file1) & 
-        (input$file2 == "")) {
-      return(NULL)
-    } else {
-      length(unique(data()[,2]))
-    }
-  })
+  plot2d_k <- function(dt) {
+    ggplot() + geom_encircle(
+      data = dt,
+      aes(
+        dt[, 1], 
+        dt[, 2], 
+        fill = clstr
+      ),
+      alpha = 2/3,
+      expand = 0,
+      s_shape = 1,
+    ) + labs(title = "k-means"
+    ) + geom_point(
+      data = dt,
+      aes(
+        dt[, 1], 
+        dt[, 2]
+      )
+    ) 
+  }
   
-  kmeans <- reactive({
-    skmeans(data(),input$k)$result
-  })
+  plot2d_d <- function(dt) {
+    ggplot(
+    ) + geom_circle(
+      data = dt$graphics$circle,
+      aes(
+        x0 = dt$graphics$circle[, 1],
+        y0 = dt$graphics$circle[, 2],
+        r = input$eps,
+        fill = clstr,
+        color = clstr
+      ),
+      alpha = 0.2,
+      show.legend = T
+    ) + geom_encircle(
+      data = dt$graphics$encircle,
+      aes(
+        dt$graphics$encircle[, 1],
+        dt$graphics$encircle[, 2],
+        group = clstr
+      ),
+      expand = 0,
+      s_shape = 1
+    ) + labs(title = "DBSCAN"
+    ) + geom_circle(
+      aes(
+        x0 = dt$graphics$noise[, 1],
+        y0 = dt$graphics$noise[, 2],
+        r = input$eps),
+      alpha = 1
+    ) + geom_point(
+      aes(data()[, 1], data()[, 2])
+    )
+  }
   
   plot3d <- function(clstr) {
     plot_ly(data(),
@@ -79,35 +121,20 @@ function(input, output, session) {
     )
   }
   
+  kmeans <- reactive({
+    skmeans(data(),input$k)$result
+  })
+  
   output$graphics1 <- renderPlot({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(data()) == 2) {
-        ggplot() + geom_point(
-          data = kmeans(),
-          aes(
-            kmeans()[, 1], 
-            kmeans()[, 2], 
-            colour = clstr
-          ),
-          size = 4,
-          show.legend = FALSE
-        ) + geom_encircle(
-          data = kmeans(),
-          aes(
-            kmeans()[, 1], 
-            kmeans()[, 2], 
-            fill = clstr
-          ),
-          alpha = 0.2,
-          expand = 0,
-          s_shape = 0.8,
-        ) + labs(title = "k-means")
+        plot2d_k(kmeans())
       }
     }
-  }, height = 600, width = 600)
+  })
   
   output$graphics3 <- renderPlotly({
     if ((is.null(input$file1) & 
@@ -124,24 +151,62 @@ function(input, output, session) {
     }
   })
   
-  output$textK3 <-renderTable({
+  anlz_clstr_k <- function(x) {
+    table <- matrix()
+    clstr <- x$clstr
+    total <- nrow(data())
+    for (i in 1:length(unique(clstr))) {
+      table[i] <- paste0(
+        i, " Кластер: ", 
+        round(length(clstr[clstr == i]) / 
+                total * 100, 2),
+        " % (", length(clstr[clstr == i]), 
+        ")")
+    }
+    return(table)
+  }
+  
+  anlz_clstr_d <- function(x) {
+    table <- matrix()
+    clstr <- x$result$clstr
+    total <- nrow(data())
+    for (i in 1:length(unique(clstr))) {
+      table[i] <- paste0(
+        i," кластер: ",
+        if (i != length(unique(clstr))) {
+          round(length(clstr[clstr == i]) / 
+                  total * 100, 2)
+        } else {
+          round(length(clstr[clstr == "noise"]) / 
+                  total * 100, 2)
+        }, " % (", 
+        if (i != length(unique(clstr))) {
+          round(length(clstr[clstr == i]))
+        } else {
+          round(length(clstr[clstr == "noise"]))
+        },")")
+    }
+    return(table)
+  }
+  
+  output$textk3 <-renderTable({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(data()) >= 3) {
-        table <- matrix()
-        clstr <- kmeans()$clstr
-        total <- nrow(data())
-        for (i in 1:length(unique(clstr))) {
-          table[i] <- paste0(
-            i, " Кластер: ", 
-            round(length(clstr[clstr == i]) / 
-                    total * 100, 2),
-            " % (", length(clstr[clstr == i]), 
-            ")")
-        }
-        table
+        anlz_clstr_k(kmeans())
+      }
+    }
+  })
+  
+  output$textk2 <-renderTable({
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(data()) == 2) {
+        anlz_clstr_k(kmeans())
       }
     }
   })
@@ -171,41 +236,10 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) == 2) {
-        ggplot(
-        ) + geom_circle(
-          data = dbscan()$graphics$circle,
-          aes(
-            x0 = dbscan()$graphics$circle[, 1],
-            y0 = dbscan()$graphics$circle[, 2],
-            r = input$eps,
-            fill = clstr,
-            color = clstr
-          ),
-          alpha = 0.2,
-          show.legend = T
-        ) + geom_encircle(
-          data = dbscan()$graphics$encircle,
-          aes(
-            x = dbscan()$graphics$encircle[, 1],
-            y = dbscan()$graphics$encircle[, 2],
-            group = clstr
-          ),
-          alpha = 1,
-          expand = 0,
-          s_shape = 0.8
-        ) + labs(title = "DBSCAN"
-        ) + geom_circle(
-          aes(
-            x0 = dbscan()$graphics$noise[, 1],
-            y0 = dbscan()$graphics$noise[, 2],
-            r = input$eps),
-          alpha = 1
-        ) + geom_point(
-          aes(data()[, 1], data()[, 2])
-        )
+        plot2d_d(dbscan())
       }
     }
-  }, height = 600, width = 600)
+  })
   
   output$graphics4 <- renderPlotly({
     if ((is.null(input$file1) & 
@@ -228,26 +262,18 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) >= 3) {
-        table <- matrix()
-        clstr <- dbscan()$result$clstr
-        total <- nrow(data())
-        for (i in 1:length(unique(clstr))) {
-          table[i] <- paste0(
-            i," кластер: ",
-            if (i != length(unique(clstr))) {
-              round(length(clstr[clstr == i]) / 
-                      total * 100, 2)
-            } else {
-              round(length(clstr[clstr == "noise"]) / 
-                      total * 100, 2)
-            }, " % (", 
-            if (i != length(unique(clstr))) {
-              round(length(clstr[clstr == i]))
-            } else {
-              round(length(clstr[clstr == "noise"]))
-            },")")
-        }
-        table
+        anlz_clstr_d(dbscan())
+      }
+    }
+  })
+  
+  output$textd2 <-renderTable({
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(data()) == 2) {
+        anlz_clstr_d(dbscan())
       }
     }
   })
