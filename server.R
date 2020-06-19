@@ -71,7 +71,7 @@ function(input, output, session) {
       ),
       expand = 0,
       s_shape = 1
-    ) + labs(title = "DBSCAN"
+    ) + labs(title = "dbscan_v1"
     ) + geom_circle(
       aes(
         x0 = dt$graphics$noise[, 1],
@@ -80,6 +80,58 @@ function(input, output, session) {
       alpha = 1
     ) + geom_point(
       aes(data()[, 1], data()[, 2])
+    )
+  }
+  
+  plot2d_d_v2_f <- function(df) {
+    df_wo_noise <- df[df$clstr != 0,]
+    df_only_noise <- df[df$clstr == 0,]
+    return(
+      ggplot() +
+        geom_encircle(
+          data = df_wo_noise,
+          aes(V1,
+              V2,
+              fill = clstr),
+          alpha = 2 / 3,
+          expand = 0,
+          s_shape = 1,
+        ) + geom_point(
+          data=df_wo_noise, 
+          aes(V1, V2)
+        ) + geom_point(
+          data=df_only_noise, 
+          aes(V1, V2), 
+          size = 4
+        ) + labs(title = "dbscan_v2_f")
+                
+    )
+  }
+  
+  plot2d_d_v2_s <- function(df) {
+    df_wo_noise <- df[df$clstr != 0,]
+    df_only_noise <- df[df$clstr == 0,]
+    return(
+      ggplot() + geom_circle(
+        data = df_wo_noise,
+        aes(
+          x0 = V1,
+          y0 = V2,
+          r = input$eps,
+          fill = clstr,
+          color = clstr
+        ),
+        alpha = 0.5,
+        show.legend = T
+      ) + geom_point(
+        data=df_wo_noise, 
+        aes(V1, V2)
+      ) + geom_point(
+        data=df_only_noise, 
+        aes(V1, V2), 
+        size = 4
+      ) + labs(title = "dbscan_v2_s")
+              
     )
   }
   
@@ -130,15 +182,6 @@ function(input, output, session) {
     return(table)
   }
   
-  output$table <- renderDataTable(
-    if (is.null(input$file1) & 
-        (input$file2 == "")) {
-      return(NULL)
-    } else {
-      datatable(data(), list(searching = F))
-    }
-  )
-  
   anlz_clstr_d <- function(x) {
     table <- matrix()
     clstr <- x$result$clstr
@@ -162,13 +205,22 @@ function(input, output, session) {
     return(table)
   }
   
+  output$table <- renderDataTable(
+    if (is.null(input$file1) & 
+        (input$file2 == "")) {
+      return(NULL)
+    } else {
+      datatable(data(), list(searching = F))
+    }
+  )
+  
   #-------------------------------
   
   kmeans <- reactive({
     skmeans(data(),input$k)
   })
   
-  output$graphics1 <- renderPlot({
+  output$graphics_2d_k <- renderPlot({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
       return(NULL)
@@ -179,7 +231,7 @@ function(input, output, session) {
     }
   })
   
-  output$graphics3 <- renderPlotly({
+  output$graphics_3d_k <- renderPlotly({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
       return(NULL)
@@ -231,31 +283,57 @@ function(input, output, session) {
   
   #---------------------------------------------
   
-  dbscan <- reactive({
+  dbscan_v1 <- reactive({
     sdbscan(data(), input$eps, input$minpts)
   })
   
-  output$graphics2 <- renderPlot({
+  dbscan_v2 <- reactive({
+    sdbscan_v2(data(), input$eps, input$minpts)
+  })
+  
+  output$graphics_2d_D_v1 <- renderPlot({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(data()) == 2) {
-        plot2d_d(dbscan())
+        plot2d_d(dbscan_v1())
       }
     }
   })
   
-  output$graphics4 <- renderPlotly({
+  output$graphics_2d_D_v2_f <- renderPlot({
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(data()) == 2) {
+        plot2d_d_v2_f(dbscan_v2())
+      }
+    }
+  })
+  
+  output$graphics_2d_D_v2_s <- renderPlot({
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(data()) == 2) {
+        plot2d_d_v2_s(dbscan_v2())
+      }
+    }
+  })
+  
+  output$graphics_Nd_D_v1 <- renderPlotly({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
       return(NULL)
     } else {
       if (ncol(data()) == 3) {
-        plot3d(dbscan()$result$clstr)
+        plot3d(dbscan_v1()$result$clstr)
       } else {
         if (ncol(data()) > 3) {
-          plotNd(dbscan()$result$clstr)
+          plotNd(dbscan_v1()$result$clstr)
         }
       }
     }
@@ -267,7 +345,7 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) >= 3) {
-        anlz_clstr_d(dbscan())
+        anlz_clstr_d(dbscan_v1())
       }
     }
   })
@@ -278,16 +356,16 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) == 2) {
-        anlz_clstr_d(dbscan())
+        anlz_clstr_d(dbscan_v1())
       }
     }
   })
   
   output$downloadTable2 <- downloadHandler(
-    filename = "dbscan.csv",
+    filename = "dbscan_v1.csv",
     content = function(file) {
       write.table(
-        dbscan()$result,
+        dbscan_v1()$result,
         file,
         sep = ";",
         row.names = F,

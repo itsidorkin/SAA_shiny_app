@@ -52,20 +52,27 @@ fluidPage(
         title = "Machin learning",
         tabPanel("Table", dataTableOutput("table")),
         tabPanel("kmeans 2d", plotOutput(
-          "graphics1", width = "800px", height = "600px") %>% withSpinner(),
+          "graphics_2d_k", width = "800px", height = "600px") %>% withSpinner(),
           tableOutput("textk2")
         ),
         tabPanel("kmeans 3d+", plotlyOutput(
-          "graphics3", width = "800px", height = "600px") %>% withSpinner(), 
+          "graphics_3d_k", width = "800px", height = "600px") %>% withSpinner(), 
           tableOutput("textk3")
         ),
-        tabPanel("dbscan 2d", plotOutput(
-          "graphics2", width = "800px", height = "600px") %>% withSpinner(),
-          tableOutput("textd2")
+        tabPanel("dbscan 2d", 
+                 navbarPage(title = '',
+                            tabPanel("v1 slow", plotOutput("graphics_2d_D_v1", width = "800px", height = "600px") %>% withSpinner()),
+                            tabPanel("v2 fast", plotOutput("graphics_2d_D_v2_f", width = "800px", height = "600px") %>% withSpinner()),
+                            tabPanel("v2 slow", plotOutput("graphics_2d_D_v2_s", width = "800px", height = "600px") %>% withSpinner())
+                 ),
+                 tableOutput("textd2")
         ),
-        tabPanel("dbscan 3d+", plotlyOutput(
-          "graphics4", width = "800px", height = "600px") %>% withSpinner(),
-          tableOutput("textd3")
+        tabPanel("dbscan 3d+", 
+                 navbarPage(title = '',
+                            tabPanel("v1", plotlyOutput("graphics_Nd_D_v1", width = "800px", height = "600px") %>% withSpinner()),
+                            tabPanel("v2", plotlyOutput("graphics_Nd_D_v2", width = "800px", height = "600px") %>% withSpinner())
+                 ),
+                 tableOutput("textd3")
         )
       )
     )  
