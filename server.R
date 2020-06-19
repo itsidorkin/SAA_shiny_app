@@ -339,6 +339,21 @@ function(input, output, session) {
     }
   })
   
+  output$graphics_Nd_D_v2 <- renderPlotly({
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(data()) == 3) {
+        return(NULL)
+      } else {
+        if (ncol(data()) > 3) {
+          return(NULL)
+        }
+      }
+    }
+  })
+  
   output$textd3 <-renderTable({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
