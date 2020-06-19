@@ -53,16 +53,20 @@ fluidPage(
         tabPanel("Table", dataTableOutput("table")),
         tabPanel("kmeans 2d", plotOutput(
           "graphics1", width = "800px", height = "600px") %>% withSpinner(),
-          tableOutput("textk2")),
+          tableOutput("textk2")
+        ),
         tabPanel("kmeans 3d+", plotlyOutput(
           "graphics3", width = "800px", height = "600px") %>% withSpinner(), 
-          tableOutput("textk3")),
+          tableOutput("textk3")
+        ),
         tabPanel("dbscan 2d", plotOutput(
           "graphics2", width = "800px", height = "600px") %>% withSpinner(),
-          tableOutput("textd2")),
+          tableOutput("textd2")
+        ),
         tabPanel("dbscan 3d+", plotlyOutput(
           "graphics4", width = "800px", height = "600px") %>% withSpinner(),
-          tableOutput("textd3"))
+          tableOutput("textd3")
+        )
       )
     )  
   )
