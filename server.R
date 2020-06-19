@@ -6,6 +6,9 @@ library(DT)
 library(plotly)
 
 function(input, output, session) {
+  
+  #-------------------------------
+  
   data <- reactive({
     if (input$file2 != "") {
       a <- input$file2
@@ -24,15 +27,6 @@ function(input, output, session) {
              sep = input$sep,
              dec = input$dec)[del]
   })
-  
-  output$table <- renderDataTable(
-    if (is.null(input$file1) & 
-        (input$file2 == "")) {
-      return(NULL)
-    } else {
-      datatable(data(), list(searching = F))
-    }
-  )
   
   plot2d_k <- function(dt) {
     ggplot() + geom_encircle(
@@ -121,6 +115,55 @@ function(input, output, session) {
     )
   }
   
+  anlz_clstr_k <- function(x) {
+    table <- matrix()
+    clstr <- x$clstr
+    total <- nrow(data())
+    for (i in 1:length(unique(clstr))) {
+      table[i] <- paste0(
+        i, " Кластер: ", 
+        round(length(clstr[clstr == i]) / 
+                total * 100, 2),
+        " % (", length(clstr[clstr == i]), 
+        ")")
+    }
+    return(table)
+  }
+  
+  output$table <- renderDataTable(
+    if (is.null(input$file1) & 
+        (input$file2 == "")) {
+      return(NULL)
+    } else {
+      datatable(data(), list(searching = F))
+    }
+  )
+  
+  anlz_clstr_d <- function(x) {
+    table <- matrix()
+    clstr <- x$result$clstr
+    total <- nrow(data())
+    for (i in 1:length(unique(clstr))) {
+      table[i] <- paste0(
+        i," кластер: ",
+        if (i != length(unique(clstr))) {
+          round(length(clstr[clstr == i]) / 
+                  total * 100, 2)
+        } else {
+          round(length(clstr[clstr == "noise"]) / 
+                  total * 100, 2)
+        }, " % (", 
+        if (i != length(unique(clstr))) {
+          round(length(clstr[clstr == i]))
+        } else {
+          round(length(clstr[clstr == "noise"]))
+        },")")
+    }
+    return(table)
+  }
+  
+  #-------------------------------
+  
   kmeans <- reactive({
     skmeans(data(),input$k)
   })
@@ -151,44 +194,6 @@ function(input, output, session) {
     }
   })
   
-  anlz_clstr_k <- function(x) {
-    table <- matrix()
-    clstr <- x$clstr
-    total <- nrow(data())
-    for (i in 1:length(unique(clstr))) {
-      table[i] <- paste0(
-        i, " Кластер: ", 
-        round(length(clstr[clstr == i]) / 
-                total * 100, 2),
-        " % (", length(clstr[clstr == i]), 
-        ")")
-    }
-    return(table)
-  }
-  
-  anlz_clstr_d <- function(x) {
-    table <- matrix()
-    clstr <- x$result$clstr
-    total <- nrow(data())
-    for (i in 1:length(unique(clstr))) {
-      table[i] <- paste0(
-        i," кластер: ",
-        if (i != length(unique(clstr))) {
-          round(length(clstr[clstr == i]) / 
-                  total * 100, 2)
-        } else {
-          round(length(clstr[clstr == "noise"]) / 
-                  total * 100, 2)
-        }, " % (", 
-        if (i != length(unique(clstr))) {
-          round(length(clstr[clstr == i]))
-        } else {
-          round(length(clstr[clstr == "noise"]))
-        },")")
-    }
-    return(table)
-  }
-  
   output$textk3 <-renderTable({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
@@ -215,7 +220,7 @@ function(input, output, session) {
     filename = "kmeans.csv",
     content = function(file) {
       write.table(
-        skmeans(data(), input$k),
+        kmeans(),
         file,
         sep = ";",
         row.names = F,
@@ -282,7 +287,7 @@ function(input, output, session) {
     filename = "dbscan.csv",
     content = function(file) {
       write.table(
-        sdbscan(data(), input$eps, input$minpts)$result,
+        dbscan()$result,
         file,
         sep = ";",
         row.names = F,
