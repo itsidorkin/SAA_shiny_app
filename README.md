@@ -6,7 +6,7 @@
  
 Перед запуском необходимо установить пакеты используемые в приложении: 
  
-     install.packages(c("ggplot2", "ggalt", "ggforce", "DT", "plotly", "shiny", "devtools", "shinycssloaders"))
+     install.packages(c("ggplot2", "ggalt", "ggforce", "DT", "plotly", "shiny", "devtools", "shinycssloaders", "shinydashboard"))
      devtools::install_github('nikrodis/SAA', force = T)
      
 (Вероятно в будущем этот шаг можно будет убрать, если я разберусь, как из приложения сделать пакет)
