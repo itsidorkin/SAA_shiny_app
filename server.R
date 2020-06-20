@@ -89,22 +89,25 @@ function(input, output, session) {
     return(
       ggplot() +
         geom_encircle(
-          data = df_wo_noise,
-          aes(V1,
-              V2,
-              fill = clstr),
+          aes(df_wo_noise[,1],
+              df_wo_noise[,2],
+              fill = df_wo_noise$clstr),
           alpha = 2 / 3,
           expand = 0,
-          s_shape = 1,
+          s_shape = 1
         ) + geom_point(
-          data=df_wo_noise, 
-          aes(V1, V2)
+          aes(
+            df_wo_noise[,1], 
+            df_wo_noise[,2]
+          )
         ) + geom_point(
-          data=df_only_noise, 
-          aes(V1, V2), 
+          aes(
+            df_only_noise[,1], 
+            df_only_noise[,2]
+          ), 
           size = 4
         ) + labs(title = "dbscan_v2_f")
-                
+      
     )
   }
   
@@ -113,26 +116,39 @@ function(input, output, session) {
     df_only_noise <- df[df$clstr == 0,]
     return(
       ggplot() + geom_circle(
-        data = df_wo_noise,
         aes(
-          x0 = V1,
-          y0 = V2,
+          x0 = df_wo_noise[,1],
+          y0 = df_wo_noise[,2],
           r = input$eps,
-          fill = clstr,
-          color = clstr
+          fill = df_wo_noise$clstr,
+          color = df_wo_noise$clstr
         ),
         alpha = 0.5,
         show.legend = T
       ) + geom_point(
-        data=df_wo_noise, 
-        aes(V1, V2)
+        aes(
+          df_wo_noise[,1], 
+          df_wo_noise[,2]
+        )
       ) + geom_point(
-        data=df_only_noise, 
-        aes(V1, V2), 
+        aes(
+          df_only_noise[,1], 
+          df_only_noise[,2]
+        ), 
         size = 4
       ) + labs(title = "dbscan_v2_s")
-              
+      
     )
+  }
+  
+  plot2d_D_v2_plotly <- function(df) {
+    plot_ly(x = df[, 1], 
+            y = df[, 2], 
+            color = df$clstr,
+            stroke = I('black'),
+            alpha_stroke = 1/3
+    ) %>%
+      add_markers()
   }
   
   plot3d <- function(clstr) {
@@ -154,6 +170,7 @@ function(input, output, session) {
         label = colnames(data())[i]
       )
     }
+    
     plot_ly(type = 'splom',
             dimensions = dimensions,
             color = clstr,
@@ -324,6 +341,17 @@ function(input, output, session) {
     }
   })
   
+  output$graphics_2d_D_v2_plotly <- renderPlotly({
+    if ((is.null(input$file1) & 
+         (input$file2 == ""))) {
+      return(NULL)
+    } else {
+      if (ncol(data()) == 2) {
+        plot2d_D_v2_plotly(dbscan_v2())
+      }
+    }
+  })
+  
   output$graphics_Nd_D_v1 <- renderPlotly({
     if ((is.null(input$file1) & 
          (input$file2 == ""))) {
@@ -345,7 +373,7 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) == 3) {
-        return(NULL)
+        plot3d(dbscan_v2()$clstr)
       } else {
         if (ncol(data()) > 3) {
           return(NULL)
