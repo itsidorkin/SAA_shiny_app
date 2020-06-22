@@ -41,11 +41,9 @@ dashboardPage(
     numericInput("eps", "eps (for dbscan)",
                  value = 0.5, min = 0, step = 0.1),
     numericInput("minpts", "minpts (for dbscan)",
-                 value = 4, min = 1),
-    downloadButton("downloadTable1",
-                   "Save result k-means (CSV)"),
-    downloadButton("downloadTable2",
-                   "Save result dbscan (CSV)")
+                 value = 4, min = 1)
+    #downloadButton("downloadTable1", "Save result k-means (CSV)"),
+    #downloadButton("downloadTable2", "Save result dbscan (CSV)")
   ),
   dashboardBody(
     navbarPage(

@@ -50,34 +50,40 @@ function(input, output, session) {
   }
   
   plot2d_d <- function(dt) {
-    ggplot(
-    ) + geom_circle(
-      data = dt$graphics$circle,
-      aes(
-        x0 = dt$graphics$circle[, 1],
-        y0 = dt$graphics$circle[, 2],
-        r = input$eps,
-        fill = clstr,
-        color = clstr
-      ),
-      alpha = 0.5,
-      show.legend = T
-    ) + geom_encircle(
-      data = dt$graphics$encircle,
-      aes(
-        dt$graphics$encircle[, 1],
-        dt$graphics$encircle[, 2],
-        group = clstr
-      ),
-      expand = 0,
-      s_shape = 1
-    ) + labs(title = "dbscan_v1"
-    ) + geom_circle(
-      aes(
-        x0 = dt$graphics$noise[, 1],
-        y0 = dt$graphics$noise[, 2],
-        r = input$eps),
-      alpha = 1
+    p <- ggplot()
+    if (nrow(dt$graphics$noise) != 0) {
+      p <- p + geom_circle(
+        aes(
+          x0 = dt$graphics$noise[, 1],
+          y0 = dt$graphics$noise[, 2],
+          r = input$eps),
+        alpha = 1
+      )
+    }
+    if (nrow(dt$graphics$circle) != 0) {
+      p <- p + geom_circle(
+        data = dt$graphics$circle,
+        aes(
+          x0 = dt$graphics$circle[, 1],
+          y0 = dt$graphics$circle[, 2],
+          r = input$eps,
+          fill = clstr,
+          color = clstr
+        ),
+        alpha = 0.5,
+        show.legend = T
+      ) + geom_encircle(
+        data = dt$graphics$encircle,
+        aes(
+          dt$graphics$encircle[, 1],
+          dt$graphics$encircle[, 2],
+          group = clstr
+        ),
+        expand = 0,
+        s_shape = 1
+      )
+    }
+    p + labs(title = "dbscan_v1"
     ) + geom_point(
       aes(data()[, 1], data()[, 2])
     )
