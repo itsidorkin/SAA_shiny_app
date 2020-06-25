@@ -4,7 +4,7 @@
 
 ### Шаг 0
 
-Убедитесь, что у вас установлены язык [R](https://cran.r-project.org/bin/windows/base) и [Rstudio](https://rstudio.com/products/rstudio/download)
+Убедитесь, что у вас установлены язык [R](https://cran.r-project.org/bin/windows/base) и [Rstudio](https://rstudio.com/products/rstudio/download/#download)
  
 ### Шаг 1 Подготовка 
  
