@@ -1,6 +1,10 @@
 # Веб-приложение для ML (SAA)
 
 ## Как пользоваться
+
+### Шаг 0
+
+Убедитесь, что у вас установлены язык [R](https://cran.r-project.org/bin/windows/base) и [Rstudio](https://rstudio.com/products/rstudio/download)
  
 ### Шаг 1 Подготовка 
  
