@@ -92,7 +92,6 @@ function(input, output, session) {
   plot2d_d_v2_f <- function(df) {
     df_wo_noise <- df[df$clstr != 0,]
     df_only_noise <- df[df$clstr == 0,]
-    return(
       ggplot() +
         geom_encircle(
           aes(df_wo_noise[,1],
@@ -113,15 +112,14 @@ function(input, output, session) {
           ), 
           size = 4
         ) + labs(title = "dbscan_v2_f")
-      
-    )
   }
   
   plot2d_d_v2_s <- function(df) {
     df_wo_noise <- df[df$clstr != 0,]
     df_only_noise <- df[df$clstr == 0,]
-    return(
-      ggplot() + geom_circle(
+    p <- ggplot()
+    if (nrow(df_wo_noise) != 0) {
+      p <- p + geom_circle(
         aes(
           x0 = df_wo_noise[,1],
           y0 = df_wo_noise[,2],
@@ -136,14 +134,20 @@ function(input, output, session) {
           df_wo_noise[,1], 
           df_wo_noise[,2]
         )
-      ) + geom_point(
+      )
+    }
+    if (nrow(df_only_noise) != 0) {
+      p <- p + geom_point(
         aes(
           df_only_noise[,1], 
           df_only_noise[,2]
         ), 
         size = 4
-      ) + labs(title = "dbscan_v2_s")
-      
+      ) 
+    }
+    p + labs(title = "dbscan_v2_s"
+    ) + geom_point(
+      aes(data()[, 1], data()[, 2])
     )
   }
   
@@ -207,24 +211,29 @@ function(input, output, session) {
   
   anlz_clstr_d <- function(x) {
     table <- matrix()
-    clstr <- x$result$clstr
+    clstr <- x$clstr
     total <- nrow(data())
-    for (i in 1:length(unique(clstr))) {
-      table[i] <- paste0(
-        i," кластер: ",
-        if (i != length(unique(clstr))) {
-          round(length(clstr[clstr == i]) / 
-                  total * 100, 2)
-        } else {
-          round(length(clstr[clstr == "noise"]) / 
-                  total * 100, 2)
-        }, " % (", 
-        if (i != length(unique(clstr))) {
-          round(length(clstr[clstr == i]))
-        } else {
-          round(length(clstr[clstr == "noise"]))
-        },")")
+    
+    if (length(clstr[clstr == 0]) != 0) {
+      len <- length(unique(clstr)) - 1
+    } else {
+      len <- length(unique(clstr))
     }
+    
+    for (i in 1:len) {
+      table[i] <- paste0(
+        i, " Кластер: ", 
+        round(length(clstr[clstr == i]) / 
+                total * 100, 2),
+        " % (", length(clstr[clstr == i]), 
+        ")")
+    }
+    table[len + 1] <- paste0(
+      0, " Кластер: ", 
+      round(length(clstr[clstr == 0]) / 
+              total * 100, 2),
+      " % (", length(clstr[clstr == 0]), 
+      ")")
     return(table)
   }
   
@@ -306,24 +315,24 @@ function(input, output, session) {
   
   #---------------------------------------------
   
-  dbscan_v1 <- reactive({
-    sdbscan(data(), input$eps, input$minpts)
-  })
+  # dbscan_v1 <- reactive({
+  #   sdbscan(data(), input$eps, input$minpts)
+  # })
   
   dbscan_v2 <- reactive({
     sdbscan_v2(data(), input$eps, input$minpts)
   })
   
-  output$graphics_2d_D_v1 <- renderPlot({
-    if ((is.null(input$file1) & 
-         (input$file2 == ""))) {
-      return(NULL)
-    } else {
-      if (ncol(data()) == 2) {
-        plot2d_d(dbscan_v1())
-      }
-    }
-  })
+  # output$graphics_2d_D_v1 <- renderPlot({
+  #   if ((is.null(input$file1) & 
+  #        (input$file2 == ""))) {
+  #     return(NULL)
+  #   } else {
+  #     if (ncol(data()) == 2) {
+  #       plot2d_d(dbscan_v1())
+  #     }
+  #   }
+  # })
   
   output$graphics_2d_D_v2_f <- renderPlot({
     if ((is.null(input$file1) & 
@@ -358,20 +367,20 @@ function(input, output, session) {
     }
   })
   
-  output$graphics_Nd_D_v1 <- renderPlotly({
-    if ((is.null(input$file1) & 
-         (input$file2 == ""))) {
-      return(NULL)
-    } else {
-      if (ncol(data()) == 3) {
-        plot3d(dbscan_v1()$result$clstr)
-      } else {
-        if (ncol(data()) > 3) {
-          plotNd(dbscan_v1()$result$clstr)
-        }
-      }
-    }
-  })
+  # output$graphics_Nd_D_v1 <- renderPlotly({
+  #   if ((is.null(input$file1) & 
+  #        (input$file2 == ""))) {
+  #     return(NULL)
+  #   } else {
+  #     if (ncol(data()) == 3) {
+  #       plot3d(dbscan_v1()$result$clstr)
+  #     } else {
+  #       if (ncol(data()) > 3) {
+  #         plotNd(dbscan_v1()$result$clstr)
+  #       }
+  #     }
+  #   }
+  # })
   
   output$graphics_Nd_D_v2 <- renderPlotly({
     if ((is.null(input$file1) & 
@@ -394,7 +403,7 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) >= 3) {
-        anlz_clstr_d(dbscan_v1())
+        anlz_clstr_d(dbscan_v2())
       }
     }
   })
@@ -405,16 +414,16 @@ function(input, output, session) {
       return(NULL)
     } else {
       if (ncol(data()) == 2) {
-        anlz_clstr_d(dbscan_v1())
+        anlz_clstr_d(dbscan_v2())
       }
     }
   })
   
   output$downloadTable2 <- downloadHandler(
-    filename = "dbscan_v1.csv",
+    filename = "dbscan_v2.csv",
     content = function(file) {
       write.table(
-        dbscan_v1()$result,
+        dbscan_v2()$result,
         file,
         sep = ";",
         row.names = F,
