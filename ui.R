@@ -39,10 +39,10 @@ dashboardPage(
     
     numericInput("k", "clusters (for k-means)", value = 3, min = 2),
     numericInput("eps", "eps (for dbscan)", value = 0.5, min = 0, step = 0.1),
-    numericInput("minpts", "minpts (for dbscan)", value = 4, min = 1)
+    numericInput("minpts", "minpts (for dbscan)", value = 4, min = 1),
     
-    #downloadButton("downloadTable1", "Save result k-means (CSV)"),
-    #downloadButton("downloadTable2", "Save result dbscan (CSV)")
+    downloadButton("downloadTable1", "Save result k-means (CSV)"),
+    downloadButton("downloadTable2", "Save result dbscan (CSV)")
   ),
   dashboardBody(
     navbarPage(
@@ -58,18 +58,13 @@ dashboardPage(
       ),
       tabPanel("dbscan 2d",
                navbarPage(title = '',
-                          tabPanel("v2 fast ggplot2", plotOutput("graphics_2d_D_v2_f", width = "800px", height = "600px") %>% withSpinner()),
-                          tabPanel("v2 slow ggplot2", plotOutput("graphics_2d_D_v2_s", width = "800px", height = "600px") %>% withSpinner()),
-                          tabPanel("v2 plot_ly", plotlyOutput("graphics_2d_D_v2_plotly", width = "800px", height = "600px") %>% withSpinner())
-                          # tabPanel("v1 slow ggplot2", plotOutput("graphics_2d_D_v1", width = "800px", height = "600px") %>% withSpinner())
-                          ),
+                          tabPanel("fast ggplot2", plotOutput("graphics_2d_D_v2_f", width = "800px", height = "600px") %>% withSpinner()),
+                          tabPanel("slow ggplot2", plotOutput("graphics_2d_D_v2_s", width = "800px", height = "600px") %>% withSpinner()),
+                          tabPanel("fast plot_ly", plotlyOutput("graphics_2d_D_v2_plotly", width = "800px", height = "600px") %>% withSpinner())
+               ),
                tableOutput("textd2")
       ),
-      tabPanel("dbscan 3d+",
-               navbarPage(title = '',
-                          tabPanel("v2", plotlyOutput("graphics_Nd_D_v2", width = "800px", height = "600px") %>% withSpinner())
-                          # tabPanel("v1", plotlyOutput("graphics_Nd_D_v1", width = "800px", height = "600px") %>% withSpinner())
-               ),
+      tabPanel("dbscan 3d+", plotlyOutput("graphics_Nd_D_v2", width = "800px", height = "600px") %>% withSpinner(),
                tableOutput("textd3")
       )
     )
