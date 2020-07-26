@@ -391,7 +391,7 @@ function(input, output, session) {
         plot3d(dbscan_v2()$clstr)
       } else {
         if (ncol(data()) > 3) {
-          return(NULL)
+          plotNd(dbscan_v2()$clstr)
         }
       }
     }
@@ -423,7 +423,7 @@ function(input, output, session) {
     filename = "dbscan_v2.csv",
     content = function(file) {
       write.table(
-        dbscan_v2()$result,
+        dbscan_v2(),
         file,
         sep = ";",
         row.names = F,
