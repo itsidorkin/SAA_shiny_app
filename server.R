@@ -49,46 +49,6 @@ function(input, output, session) {
     ) 
   }
   
-  plot2d_d <- function(dt) {
-    p <- ggplot()
-    if (nrow(dt$graphics$noise) != 0) {
-      p <- p + geom_circle(
-        aes(
-          x0 = dt$graphics$noise[, 1],
-          y0 = dt$graphics$noise[, 2],
-          r = input$eps),
-        alpha = 1
-      )
-    }
-    if (nrow(dt$graphics$circle) != 0) {
-      p <- p + geom_circle(
-        data = dt$graphics$circle,
-        aes(
-          x0 = dt$graphics$circle[, 1],
-          y0 = dt$graphics$circle[, 2],
-          r = input$eps,
-          fill = clstr,
-          color = clstr
-        ),
-        alpha = 0.5,
-        show.legend = T
-      ) + geom_encircle(
-        data = dt$graphics$encircle,
-        aes(
-          dt$graphics$encircle[, 1],
-          dt$graphics$encircle[, 2],
-          group = clstr
-        ),
-        expand = 0,
-        s_shape = 1
-      )
-    }
-    p + labs(title = "dbscan_v1"
-    ) + geom_point(
-      aes(data()[, 1], data()[, 2])
-    )
-  }
-  
   plot2d_d_v2_f <- function(df) {
     df_wo_noise <- df[df$clstr != 0,]
     df_only_noise <- df[df$clstr == 0,]
@@ -315,24 +275,9 @@ function(input, output, session) {
   
   #---------------------------------------------
   
-  # dbscan_v1 <- reactive({
-  #   sdbscan(data(), input$eps, input$minpts)
-  # })
-  
   dbscan_v2 <- reactive({
     sdbscan_v2(data(), input$eps, input$minpts)
   })
-  
-  # output$graphics_2d_D_v1 <- renderPlot({
-  #   if ((is.null(input$file1) & 
-  #        (input$file2 == ""))) {
-  #     return(NULL)
-  #   } else {
-  #     if (ncol(data()) == 2) {
-  #       plot2d_d(dbscan_v1())
-  #     }
-  #   }
-  # })
   
   output$graphics_2d_D_v2_f <- renderPlot({
     if ((is.null(input$file1) & 
@@ -366,21 +311,6 @@ function(input, output, session) {
       }
     }
   })
-  
-  # output$graphics_Nd_D_v1 <- renderPlotly({
-  #   if ((is.null(input$file1) & 
-  #        (input$file2 == ""))) {
-  #     return(NULL)
-  #   } else {
-  #     if (ncol(data()) == 3) {
-  #       plot3d(dbscan_v1()$result$clstr)
-  #     } else {
-  #       if (ncol(data()) > 3) {
-  #         plotNd(dbscan_v1()$result$clstr)
-  #       }
-  #     }
-  #   }
-  # })
   
   output$graphics_Nd_D_v2 <- renderPlotly({
     if ((is.null(input$file1) & 
