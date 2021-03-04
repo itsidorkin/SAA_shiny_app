@@ -22,10 +22,10 @@ function(input, output, session) {
     else
       del <- T
     
-    read.csv(a,
+    data.frame(scale(read.csv(a,
              header = input$header,
              sep = input$sep,
-             dec = input$dec)[del]
+             dec = input$dec)))[del]
   })
   
   plot2d_k <- function(dt) {
