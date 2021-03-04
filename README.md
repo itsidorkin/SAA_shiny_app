@@ -39,13 +39,13 @@
  
  Скачать и в приложении выбрать file
  
- ![](https://puu.sh/FV9JP/0512923c87.jpg)
+ <img src=readmeSrc/1.jpg width=250>
  
 ### 2 вариант
  
  Скопировать ссылку (например [эту](https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/HistData/Galton.csv)) и вставить в url
  
- ![](https://puu.sh/FV9B8/cdde2c90b8.jpg)
+ <img src=readmeSrc/2.jpg width=250>
  
  **Имейте в виду, пока в url находится текст, загрузка из файла - не осуществляется.**
  
@@ -59,4 +59,4 @@
  
  ## Пример использования
  
- ![](https://puu.sh/FXSKO/49b97387c9.gif)
+ <img src=readmeSrc/3.gif>
