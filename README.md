@@ -23,17 +23,17 @@
 Перед запуском необходимо установить пакеты используемые в приложении: 
  
      install.packages(c("ggplot2", "ggalt", "ggforce", "DT", "plotly", "shiny", "devtools", "shinycssloaders", "shinydashboard"))
-     devtools::install_github('nikrodis/SAA', force = T)
+     devtools::install_github('itsidorkin/SAA', force = T)
      
 (Вероятно в будущем этот шаг можно будет убрать, если я разберусь, как из приложения сделать пакет)
  
 ### Шаг 2 Запуск
 
-     shiny::runGitHub("SAA_shiny_app", "nikrodis")
+     shiny::runGitHub("SAA_shiny_app", "itsidorkin")
      
 ## Наборы данных
      
- Ознакомиться c приложением можно на [этих](https://github.com/nikrodis/SAA_shiny_app/tree/master/DataSets) наборах данных.
+ Ознакомиться c приложением можно на [этих](https://github.com/itsidorkin/SAA_shiny_app/tree/master/DataSets) наборах данных.
  
 ### 1 вариант
  
