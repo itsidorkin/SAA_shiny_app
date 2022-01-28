@@ -69,5 +69,3 @@
 | <img src=readmeSrc/KM3.jpeg width=250> <br/><img src=readmeSrc/KM3-2.gif width=250> | <img src=readmeSrc/DBS3.jpeg width=250>                                            |
 |                                                                                     | <img src=readmeSrc/DBS4.gif width=250> <br/><img src=readmeSrc/DBS5.gif width=250> |
 | <img src=readmeSrc/KM6.jpg width=250>                                              | <img src=readmeSrc/DBS6.png width=250>                                             |
-
-| | |
