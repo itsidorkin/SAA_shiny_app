@@ -64,8 +64,8 @@
 ## Некоторые результаты:
 | kmean                                                                               | dbscan                                                                              |
 -------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
-| <img src=readmeSrc/KM1.jpeg width=250>                                              | <img src=readmeSrc/DBS1.jpeg width=250>                                             |
-| <img src=readmeSrc/KM2.jpeg width=250>                                              | <img src=readmeSrc/DBS2.jpeg width=250>                                             |
-| <img src=readmeSrc/KM3.jpeg width=250> <br/><img src=readmeSrc/KM3-2.gif width=250> | <img src=readmeSrc/DBS3.jpeg width=250>                                             |
-|                                                                                     | <img src=readmeSrc/DBS4.gif width=250> <br/><img src=readmeSrc/DBS5.gif width=250>  |
-| <img src=readmeSrc/KM6.jpg width=250>                                              | <img src=readmeSrc/DBS6.png width=250><br/><img src=readmeSrc/DBS6-2.gif width=250> |
+| <img src=readmeSrc/KM1.jpeg width=450>                                              | <img src=readmeSrc/DBS1.jpeg width=450>                                             |
+| <img src=readmeSrc/KM2.jpeg width=450>                                              | <img src=readmeSrc/DBS2.jpeg width=450>                                             |
+| <img src=readmeSrc/KM3.jpeg width=450> <br/><img src=readmeSrc/KM3-2.gif width=450> | <img src=readmeSrc/DBS3.jpeg width=450>                                             |
+|                                                                                     | <img src=readmeSrc/DBS4.gif width=450> <br/><img src=readmeSrc/DBS5.gif width=450>  |
+| <img src=readmeSrc/KM6.jpg width=450>                                               | <img src=readmeSrc/DBS6.png width=450><br/><img src=readmeSrc/DBS6-2.gif width=450> |
